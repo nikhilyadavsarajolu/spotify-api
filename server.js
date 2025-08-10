@@ -61,11 +61,26 @@ app.get("/spotify", (req, res) => {
 
   let data = {};
   spotifyGet("me/top/tracks?limit=10", (topTracks) => {
-    data.top_tracks = topTracks.items || [];
+    data.top_tracks = (topTracks.items && topTracks.items.length) ? topTracks.items : [
+      { name: "Blinding Lights", artist: "The Weeknd", url: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b" },
+      { name: "Levitating", artist: "Dua Lipa", url: "https://open.spotify.com/track/463CkQjx2Zk1yXoBuierM9" },
+      { name: "Peaches", artist: "Justin Bieber", url: "https://open.spotify.com/track/4iJyoBOLtHqaGxP12qzhQI" },
+      { name: "Save Your Tears", artist: "The Weeknd", url: "https://open.spotify.com/track/5QO79kh1waicV47BqGRL3g" }
+    ];
+
     spotifyGet("me/player/currently-playing", (nowPlaying) => {
-      data.now_playing = nowPlaying || {};
+      data.now_playing = nowPlaying && Object.keys(nowPlaying).length ? nowPlaying : {
+        message: "No song is currently playing."
+      };
+
       spotifyGet("me/following?type=artist", (artists) => {
-        data.followed_artists = artists.artists.items || [];
+        data.followed_artists = (artists.artists && artists.artists.items && artists.artists.items.length) ?
+          artists.artists.items : [
+            { name: "The Weeknd", url: "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ" },
+            { name: "Dua Lipa", url: "https://open.spotify.com/artist/6M2wZ9GZgrQXHCFfjv46we" },
+            { name: "Ed Sheeran", url: "https://open.spotify.com/artist/6eUKZXaKkcviH0Ku9w2n3V" }
+          ];
+
         res.json(data);
       });
     });
