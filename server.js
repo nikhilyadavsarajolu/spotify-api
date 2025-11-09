@@ -9,9 +9,10 @@ const port = process.env.PORT || 5000;
 let access_token = "";
 let refresh_token = "";
 
-// Root route now redirects to Spotify login
+// Root route redirects to Spotify login if not authenticated
 app.get("/", (req, res) => {
-  res.redirect("/spotify/login");
+  if (!access_token) return res.redirect("/spotify/login");
+  res.redirect("/spotify");
 });
 
 // Spotify login
@@ -45,9 +46,10 @@ app.get("/spotify/callback", (req, res) => {
     if (!error && response.statusCode === 200) {
       access_token = body.access_token;
       refresh_token = body.refresh_token;
-      res.send("Spotify authentication successful! You can now visit /spotify");
+      // Redirect automatically to /spotify
+      res.redirect("/spotify");
     } else {
-      res.status(400).send({ error: "Error getting tokens." });
+      res.status(400).send({ error: "Error getting tokens.", details: body });
     }
   });
 });
@@ -113,4 +115,3 @@ app.post("/spotify/play/:trackId", (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
-
