@@ -9,9 +9,9 @@ const port = process.env.PORT || 5000;
 let access_token = "";
 let refresh_token = "";
 
-// Root route
+// Root route now redirects to Spotify login
 app.get("/", (req, res) => {
-  res.send("Spotify API is live! Use /spotify/login to start authentication.");
+  res.redirect("/spotify/login");
 });
 
 // Spotify login
@@ -54,7 +54,7 @@ app.get("/spotify/callback", (req, res) => {
 
 // Helper function for GET requests
 function spotifyGet(endpoint, callback) {
-  if (!access_token) return callback(null); // handle unauthenticated
+  if (!access_token) return callback(null);
   request.get({
     url: `https://api.spotify.com/v1/${endpoint}`,
     headers: { "Authorization": "Bearer " + access_token },
@@ -113,3 +113,4 @@ app.post("/spotify/play/:trackId", (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
+
